@@ -96,3 +96,27 @@ print("decoded_ids:")
 print(decoded_ids)
 
 #################### Adding special context ####################
+
+text = 'Hello, do you like tea. Is this-- a test?'
+
+# tokenizer.encode(text)
+# >>> generates an error because Hello is not in the token-dict / vocab
+
+# Extend the dictionary
+all_tokens = sorted(list(set(preprocessed)))
+all_tokens.extend(['<|endoftext|>', '<|unk|>'])
+vocab = {token:integer for integer,token in enumerate(all_tokens)}
+
+print('-----')
+print(f'len(vocab): {len(vocab)}')
+print('list(vocab.items())[-5:]')
+print(list(vocab.items())[-5:])
+
+# Little refresher on dict methods
+# print('list(vocab)[-5:]')
+# print(list(vocab)[-5:])
+# print('list(vocab.keys())[-5:]')
+# print(list(vocab.keys())[-5:])
+# print('list(vocab.values())[-5:]')
+# print(list(vocab.values())[-5:])
+
