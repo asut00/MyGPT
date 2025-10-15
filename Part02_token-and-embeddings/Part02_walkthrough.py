@@ -1,12 +1,11 @@
 from importlib.metadata import version
 
-print(f'torch version: {version('torch')}')
-print(f'tiktoken version: {version('tiktoken')}')
-
+print(f'torch version: {version("torch")}')
+print(f'tiktoken version: {version("tiktoken")}')
 # Import text source
 with open("the-verdict.txt", "r", encoding="utf-8") as f:
     raw_text = f.read()
-
+# print(raw_text)
 #################### Developing tokenizer ####################
 
 # We use the regular expression library to split on whitespaces
@@ -23,7 +22,7 @@ stripped_result = [item.strip() for item in result if item.strip()]
 # This should also work but oh well
 # basic_result = [item for item in result if item]
 
-print(f"stripped_result: {stripped_result}")
+print(f"{stripped_result}")
 
 
 #################### Apply tokenizer to text ####################
@@ -182,6 +181,8 @@ text = (
      "of someunknownPlace."
 )
 
+print('-----')
+print(text)
 print('len(text.split()):')
 print(len(text.split())) #
 
@@ -198,6 +199,7 @@ print('-----')
 print('strings:')
 print(strings)
 
+# More in depth analysis of tiktoken tokenizing
 print('-----')
 print('decoding integers:')
 for elem in integers:
@@ -223,7 +225,7 @@ print(f'num_of_words: {num_of_words}')
 enc_text = tokenizer.encode(raw_text)
 print(f'len(enc_text): {len(enc_text)}')
 
-enc_sample = enc_text[50:]
+enc_sample = enc_text[:50]
 print(f'enc_sample: {enc_sample}')
 
 context_size = 4
@@ -239,6 +241,13 @@ for i in range(1, context_size+1):
     input = enc_sample[:i]
     prediction = enc_sample[i]
     print(f'{input} -> {prediction}')
+    
+for i in range(1, context_size+1):
+    context = enc_sample[:i]
+    desired = enc_sample[i]
+
+    print(tokenizer.decode(context), "---->", tokenizer.decode([desired]))
+
 
 #### Implement dataloader ####
 
@@ -419,6 +428,8 @@ inputs, targets = next(data_iter)
 print('-----')
 print('Token IDs:\n', inputs)
 print("\nInputs shape:\n", inputs.shape)
+print('Targets:')
+print(targets)
 
 # Prints:
 # Token IDs:
@@ -432,6 +443,15 @@ print("\nInputs shape:\n", inputs.shape)
 #         [  284,  3285,   326,    11]])
 # Inputs shape:
 #  torch.Size([8, 4])
+# Targets:
+# tensor([[  367,  2885,  1464,  1807],
+#         [ 3619,   402,   271, 10899],
+#         [ 2138,   257,  7026, 15632],
+#         [  438,  2016,   257,   922],
+#         [ 5891,  1576,   438,   568],
+#         [  340,   373,   645,  1049],
+#         [ 5975,   284,   502,   284],
+#         [ 3285,   326,    11,   287]])
 
 token_embeddings = token_embedding_layer(inputs)
 print('-----')
@@ -489,12 +509,30 @@ pos_embedding_layer = torch.nn.Embedding(context_length, output_dim)
 print('-----')
 print('pos_embedding_layer.weight:')
 print(pos_embedding_layer.weight)
-# print('pos_embedding_layer.shape:')
-# print(pos_embedding_layer.shape)
+# Prints:
+# pos_embedding_layer.weight:
+# Parameter containing:
+# tensor([[ 1.7375, -0.5620, -0.6303,  ..., -0.2277,  1.5748,  1.0345],
+#         [ 1.6423, -0.7201,  0.2062,  ...,  0.4118,  0.1498, -0.4628],
+#         [-0.4651, -0.7757,  0.5806,  ...,  1.4335, -0.4963,  0.8579],
+#         [-0.6754, -0.4628,  1.4323,  ...,  0.8139, -0.7088,  0.4827]],
+#        requires_grad=True)
 
 pos_embeddings = pos_embedding_layer(torch.arange(max_length)) # torch.arange(max_length): tensor([0, 1, 2, 3])
 # Reminder : The torch.nn.Embedding() takes a list of TokenIDs as argument and returns the embedding corrsponding to these ids (which are probably the vector at the indexes corresponding to the ID)
-# In this case the list it takes in argument is (should be ?) a list of the position of the token in the sample, and returns an embedding describing this position
+# In this case the list it takes in argument is just [0,1,2,3], with each number describing the first,second,third and fourth position
+# Thus, the following print is gonna be the same as the pos_embedding_layer.weight one:
+print('pos_embeddings:')
+print(pos_embeddings)
+
+# Prints:
+# pos_embeddings:
+# tensor([[ 1.7375, -0.5620, -0.6303,  ..., -0.2277,  1.5748,  1.0345],
+#         [ 1.6423, -0.7201,  0.2062,  ...,  0.4118,  0.1498, -0.4628],
+#         [-0.4651, -0.7757,  0.5806,  ...,  1.4335, -0.4963,  0.8579],
+#         [-0.6754, -0.4628,  1.4323,  ...,  0.8139, -0.7088,  0.4827]],
+#        grad_fn=<EmbeddingBackward0>)
+
 
 
 # To create the input embeddings used in an LLM, we simply add the token and the positional embeddings:
@@ -502,9 +540,8 @@ input_embeddings = token_embeddings + pos_embeddings
 
 print('input_embeddings:')
 print(input_embeddings)
-
-
 print(f'input_embeddings.shape: {input_embeddings.shape}')
+exit()
 
 # Summary :
 # - In the initial phase of the input processing workflow, the input text is segmented into separate tokens
