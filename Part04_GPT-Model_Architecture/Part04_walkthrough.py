@@ -293,4 +293,200 @@ model_with_shortcut = ExampleDeepNeuralNetwork(
 )
 print_gradients(model_with_shortcut, sample_input)
 
-from
+from MultiHeadAttention import MultiHeadAttention
+
+class TransformerBlock(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.att = MultiHeadAttention(
+            d_in=cfg["emb_dim"],
+            d_out=cfg["emb_dim"],
+            context_length=cfg["context_length"],
+            num_heads=cfg["n_heads"], 
+            dropout=cfg["drop_rate"],
+            qkv_bias=cfg["qkv_bias"])
+        self.ff = FeedForward(cfg)
+        self.norm1 = LayerNorm(cfg["emb_dim"])
+        self.norm2 = LayerNorm(cfg["emb_dim"])
+        self.drop_shortcut = nn.Dropout(cfg["drop_rate"])
+
+    def forward(self, x):
+        # Shortcut connection for attention block
+        shortcut = x
+        x = self.norm1(x)
+        x = self.att(x)  # Shape [batch_size, num_tokens, emb_size]
+        x = self.drop_shortcut(x)
+        x = x + shortcut  # Add the original input back
+
+        # Shortcut connection for feed forward block
+        shortcut = x
+        x = self.norm2(x)
+        x = self.ff(x)
+        x = self.drop_shortcut(x)
+        x = x + shortcut  # Add the original input back
+
+        return x
+
+
+torch.manual_seed(123)
+
+x = torch.rand(2, 4, 768)  # Shape: [batch_size, num_tokens, emb_dim]
+block = TransformerBlock(GPT_CONFIG_124M)
+output = block(x)
+
+print('-----')
+print('For Transformer Block:')
+print("Input shape:", x.shape)
+print("Output shape:", output.shape)
+
+# Prints:
+# Input shape: torch.Size([2, 4, 768])
+# Output shape: torch.Size([2, 4, 768])
+
+############################################################
+################### Coding the GPT model ###################
+############################################################
+
+class GPTModel(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
+        self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
+        self.drop_emb = nn.Dropout(cfg["drop_rate"])
+        
+        self.trf_blocks = nn.Sequential(
+            *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])])
+        
+        self.final_norm = LayerNorm(cfg["emb_dim"])
+        self.out_head = nn.Linear(
+            cfg["emb_dim"], cfg["vocab_size"], bias=False
+        )
+
+    def forward(self, in_idx):
+        batch_size, seq_len = in_idx.shape
+        tok_embeds = self.tok_emb(in_idx)
+        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
+        x = tok_embeds + pos_embeds  # Shape [batch_size, num_tokens, emb_size]
+        x = self.drop_emb(x)
+        x = self.trf_blocks(x)
+        x = self.final_norm(x)
+        logits = self.out_head(x)
+        return logits
+    
+torch.manual_seed(123)
+model = GPTModel(GPT_CONFIG_124M)
+
+out = model(batch)
+print('-----')
+print('For Full GPT Architecture:')
+print("Input batch:\n", batch)
+print("\nOutput shape:", out.shape)
+print(out)
+
+# Check the number of params
+total_params = sum(p.numel() for p in model.parameters())
+print(f"Total number of parameters: {total_params:,}")
+# Prints 
+# Total number of parameters: 163,009,536
+# Because in the original GPT-2 paper, the researchers applied weight tying
+# which means that they reused the token embedding layer (`tok_emb`) as the output layer, which means setting `self.out_head.weight = self.tok_emb.weight`
+
+# If we want to verify
+print('-----')
+print("Token embedding layer shape:", model.tok_emb.weight.shape)
+print("Output layer shape:", model.out_head.weight.shape)
+total_params_gpt2 =  total_params - sum(p.numel() for p in model.out_head.parameters())
+print(f"Number of trainable parameters considering weight tying: {total_params_gpt2:,}")
+
+# We can also commute the memory requirements of the model
+
+# Calculate the total size in bytes (assuming float32, 4 bytes per parameter)
+total_size_bytes = total_params * 4
+
+# Convert to megabytes
+total_size_mb = total_size_bytes / (1024 * 1024)
+
+print('-----')
+print(f"Total size of the model: {total_size_mb:.2f} MB")
+
+# Various configurations cited in the paper :
+    # - **GPT2-small** (the 124M configuration we already implemented):
+    #     - "emb_dim" = 768
+    #     - "n_layers" = 12
+    #     - "n_heads" = 12
+
+    # - **GPT2-medium:**
+    #     - "emb_dim" = 1024
+    #     - "n_layers" = 24
+    #     - "n_heads" = 16
+    
+    # - **GPT2-large:**
+    #     - "emb_dim" = 1280
+    #     - "n_layers" = 36
+    #     - "n_heads" = 20
+    
+    # - **GPT2-XL:**
+    #     - "emb_dim" = 1600
+    #     - "n_layers" = 48
+    #     - "n_heads" = 25
+
+def generate_text_simple(model, idx, max_new_tokens, context_size):
+    # idx is (batch, n_tokens) array of indices in the current context
+    for _ in range(max_new_tokens):
+        
+        # Crop current context if it exceeds the supported context size
+        # E.g., if LLM supports only 5 tokens, and the context size is 10
+        # then only the last 5 tokens are used as context
+        idx_cond = idx[:, -context_size:]
+        
+        # Get the predictions
+        with torch.no_grad():
+            logits = model(idx_cond)
+        
+        # Focus only on the last time step
+        # (batch, n_tokens, vocab_size) becomes (batch, vocab_size)
+        logits = logits[:, -1, :]  
+
+        # Apply softmax to get probabilities
+        probas = torch.softmax(logits, dim=-1)  # (batch, vocab_size)
+
+        # Get the idx of the vocab entry with the highest probability value
+        idx_next = torch.argmax(probas, dim=-1, keepdim=True)  # (batch, 1)
+
+        # Append sampled index to the running sequence
+        idx = torch.cat((idx, idx_next), dim=1)  # (batch, n_tokens+1)
+
+    return idx
+
+print('-----')
+start_context = "Hello, I am"
+
+encoded = tokenizer.encode(start_context)
+print("encoded:", encoded)
+
+encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+print("encoded_tensor.shape:", encoded_tensor.shape)
+
+model.eval()
+
+out = generate_text_simple(
+    model=model,
+    idx=encoded_tensor, 
+    max_new_tokens=6, 
+    context_size=GPT_CONFIG_124M["context_length"]
+)
+
+print('='*50)
+print("Output:", out)
+print("Output length:", len(out[0]))
+
+# Remove batch dimension and convert back into text:
+
+decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+
+print(f"Decoded_text: {decoded_text}")
+
+# Prints
+# Decoded_text: Hello, I am Featureiman Byeswickattribute argue
+
+# >>> Since the model is untrained we get these random features, let's train the model now
