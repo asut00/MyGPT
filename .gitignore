@@ -3,5 +3,8 @@ LLMs-from-scratch/
 # Pycache
 __pycache__
 
-# archives
+# Archives
 00_archives
+
+# Weights download dir
+gpt2
