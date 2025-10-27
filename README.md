@@ -48,16 +48,6 @@ git clone https://github.com/asut00/MyGPT.git
 cd MyGPT
 ```
 
-2. Install dependencies using `uv`:
-```bash
-uv sync
-```
-
-Or using traditional pip:
-```bash
-pip install -r requirements.txt
-```
-
 The project will automatically download the GPT-2 model weights (≈509 MB) when running `MyGPT_v2_pretrained.py`.
 
 ## Usage
@@ -92,7 +82,7 @@ python MyGPT_v2_pretrained.py
 
 ```
 mini-LLM_03/
-├── src/                      # Core implementation
+├── src/                     # Core implementation
 │   ├── GPTModel.py          # Main GPT model architecture
 │   ├── MultiHeadAttention.py
 │   ├── TransformerBlock.py
@@ -107,10 +97,8 @@ mini-LLM_03/
 ├── MyGPT_v2_pretrained.py   # Pre-trained model script
 └── the-verdict.txt          # Training data
 ```
-
-## Scripts
-
-### MyGPT_v1_local-train.py
+<!-- ## Scripts -->
+## MyGPT_v1_local-train.py
 
 This first version offers a complete local training of the GPT model from scratch. It demonstrates the full training pipeline:
 
@@ -160,7 +148,7 @@ Ep 10 (Step 000085): Train loss 0.569, Val loss 6.373
 Training completed in 1.09 minutes.
 ```
 
-### MyGPT_v2_pretrained.py
+## MyGPT_v2_pretrained.py
 
 This second version uses pre-trained weights downloaded from OpenAI's open-source models (GPT-2).
 
