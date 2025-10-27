@@ -14,7 +14,7 @@ print("=========== PRETRAINED GPT MODEL ===========")
 print("============================================")
 print()
 
-print("Downloading model weights for 124 million parameter model...")
+print("Downloading model weights for 124 million parameter model (≈509 Mo)...")
 
 settings, params = download_and_load_gpt2(model_size="124M", models_dir="gpt2")
 
@@ -44,30 +44,41 @@ torch.manual_seed(123)
 
 tokenizer = tiktoken.get_encoding("gpt2")
 
-system_prompt = "You are a helpful, honest, and harmless AI assistant. Always provide accurate, concise, and clear answers to the user's questions. If you don’t know the answer, you should say so. "
+# system_prompt = "You are a helpful, honest, and harmless AI assistant. Always provide accurate, concise, and clear answers to the user's questions. If you don’t know the answer, you should say so. "
 
 # Chat loop
 while True:
-    user_input = input("MyGPT: Hello, how can I help you ? (enter 'exit' to end chat)\n> ")
+    user_input = input("MyGPT: Please enter a sentence to complete (enter 'exit' to end chat)\n> ")
 
     if user_input == "exit":
         exit()
 
-    prompt = system_prompt + user_input
+    # Use a simple prompt without system instructions (GPT-2 wasn't trained for instruction following)
+    #  prompt = user_input + "\nAnswer:"
+    #  prompt = f"The following is a helpful and concise answer to the question.\nQuestion: {user_input}\nAnswer:"
+    prompt = user_input
 
     token_ids = generate(
         model=gpt,
         idx=text_to_token_ids(prompt, tokenizer).to(device),
-        max_new_tokens=128,
+        max_new_tokens=150,
         context_size=NEW_CONFIG["context_length"],
-        top_k=50,
-        temperature=1.5
+        top_k=40,
+        temperature=0.8,  # Lower temperature for more coherent responses
+        eos_id=None
     )
 
     text_answer = token_ids_to_text(token_ids, tokenizer)
 
-    text_answer = text_answer[len(prompt):] + "|end of context|" # Remove initial prompt from final answer
-
-    text_answer = text_answer.lstrip() # Remove extraneous spaces in the beginning of answer string
+    # Extract only the generated part (after the prompt)
+    #  text_answer = text_answer[len(prompt):]
+    
+    # Stop at first natural sentence ending or at 2 newlines
+    for ending in ["\n\n", ".", "!", "?"]:
+        if ending in text_answer:
+            text_answer = text_answer[:text_answer.index(ending) + 1]
+            break
+    
+    text_answer = text_answer.strip()
 
     print("MyGPT:", text_answer)
