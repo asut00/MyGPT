@@ -15,12 +15,24 @@ This project uses `uv` as a Python package manager. To install dependencies:
 uv sync
 ```
 
-To run the scripts:
+To run the script with uv:
 
 ```bash
 uv run python MyGPT_v1_local-train.py
 # or
 uv run python MyGPT_v2_pretrained.py
+```
+
+Or to activate the environment and run the scripts with python:
+
+```
+source .venv/bin/activate
+
+# then
+
+python MyGPT_v1_local-train.py
+# or
+python MyGPT_v2_pretrained.py
 ```
 
 -----
@@ -88,8 +100,15 @@ This second version uses pre-trained weights downloaded from OpenAI's open-sourc
 
 ### Usage Example
 
-```bash
+```
 $> python ./MyGPT_v2_pretrained.py
+
+============================================
+=========== PRETRAINED GPT MODEL ===========
+============================================
+
+Downloading model weights for 124 million parameter model (≈509 Mo)...
+
 MyGPT: Please enter a sentence to complete (enter 'exit' to end chat)
 > Every effort moves you
 MyGPT: Every effort moves you toward a goal. That's the key to success. That's the reason we're always trying to make sure our teams are the best team on the field," he said.
