@@ -14,7 +14,7 @@ A from-scratch implementation of an LLM model using the Transformer architecture
   - [MyGPT_v1_local-train.py](#mygpt_v1_local-trainpy)
   - [MyGPT_v2_pretrained.py](#mygpt_v2_pretrainedpy)
 
-## Quick Start / TL;DR
+## Quick Start
 
 Get up and running with the pretrained GPT-2 model in 3 simple steps:
 
