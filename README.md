@@ -39,6 +39,7 @@ This first version offers a complete local training of the GPT model from scratc
 - The model has significant capacity but insufficient data to train properly
 
 ```
+$> python ./MyGPT_v1_local-train.py
 ===========================================
 =========== UNTRAINED GPT MODEL ===========
 ===========================================
@@ -51,31 +52,16 @@ Untrained model created with the following configuration:
 - n_layers: 12
 - drop_rate: 0.1
 - qkv_bias: False
------
-Let's run an inference with our raw untrained model:
-Input text:
->>> Every effort moves you
-Output text:
->>>  Every effort moves you rentingetic wasnم refres RexMeCHicular stren
------
-As we can see, our untrained model does not produce a good text because... it has not been trained yet!
 
 ==============================================
 =========== TRAINING OUR GPT MODEL ===========
 ==============================================
 
-Let's train our model and try again...
 Loaded trainging data from: the-verdict.txt
-Created training and validation data loaders
-Using mps device.
-==================================================
 Starting Training...
 Ep 1 (Step 000000): Train loss 9.817, Val loss 9.924
 Ep 1 (Step 000005): Train loss 8.066, Val loss 8.332
 >>> Every effort moves you,,,,,,,,,,,,.                                     
-Ep 2 (Step 000010): Train loss 6.619, Val loss 7.042
-Ep 2 (Step 000015): Train loss 6.046, Val loss 6.596
->>> Every effort moves you, and,, and, and,,,,, and, and,,,,,,,,,,, and,, the,, the, and,, and,,, the, and,,,,,,
 [...]
 Ep 9 (Step 000075): Train loss 1.059, Val loss 6.251
 Ep 9 (Step 000080): Train loss 0.800, Val loss 6.278
@@ -88,6 +74,7 @@ Ep 10 (Step 000085): Train loss 0.569, Val loss 6.373
 Training completed in 1.09 minutes.
 ```
 
+-----
 ## MyGPT_v2_pretrained.py
 
 This second version uses pre-trained weights downloaded from OpenAI's open-source models (GPT-2).
