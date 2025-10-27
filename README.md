@@ -1,5 +1,6 @@
 # MyGPT
 
+-----
 ## 1 - Overview
 
 A from-scratch implementation of an LLM model using the Transformer architecture (multi-head attention), based on the papers "Attention is all you need" (Vaswani et al., 2017) and "Language Models are Unsupervised Multitask Learners" (Radford et al., 2019) for GPT-2.
