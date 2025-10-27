@@ -1866,7 +1866,7 @@ wheels = [
 ]
 
 [[package]]
-name = "mini-llm-02"
+name = "MyGPT"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
