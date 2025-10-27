@@ -1,13 +1,13 @@
 # MyGPT
 
-## Overview
+## 1 - Overview
 
 A from-scratch implementation of an LLM model using the Transformer architecture (multi-head attention), based on the papers "Attention is all you need" (Vaswani et al., 2017) and "Language Models are Unsupervised Multitask Learners" (Radford et al., 2019) for GPT-2.
 
 This project explores the GPT-2-style language model architecture by implementing all essential components from scratch: positional embeddings, multi-head attention, Transformer blocks, and text generation.
 
 -----
-## Usage / How to run
+## 2 - Usage / How to run
 
 This project uses `uv` as a Python package manager. To install dependencies:
 
@@ -25,7 +25,7 @@ uv run python MyGPT_v2_pretrained.py
 
 Or to activate the environment and run the scripts with python:
 
-```
+```bash
 source .venv/bin/activate
 
 # then
@@ -36,7 +36,7 @@ python MyGPT_v2_pretrained.py
 ```
 
 -----
-## MyGPT_v1_local-train.py
+## 3 - MyGPT_v1_local-train.py
 
 This first version offers a complete local training of the GPT model from scratch. It demonstrates the full training pipeline:
 
@@ -87,7 +87,7 @@ Training completed in 1.09 minutes.
 ```
 
 -----
-## MyGPT_v2_pretrained.py
+## 4 - MyGPT_v2_pretrained.py
 
 This second version uses pre-trained weights downloaded from OpenAI's open-source models (GPT-2).
 
