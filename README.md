@@ -4,6 +4,7 @@ A from-scratch implementation of an LLM model using the Transformer architecture
 
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
@@ -12,6 +13,24 @@ A from-scratch implementation of an LLM model using the Transformer architecture
 - [Scripts](#scripts)
   - [MyGPT_v1_local-train.py](#mygpt_v1_local-trainpy)
   - [MyGPT_v2_pretrained.py](#mygpt_v2_pretrainedpy)
+
+## Quick Start / TL;DR
+
+Get up and running with the pretrained GPT-2 model in 3 simple steps:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/asut00/MyGPT.git
+cd MyGPT
+
+# 2. Install dependencies
+uv sync
+
+# 3. Run the pretrained model (downloads ~509 MB of weights automatically)
+uv run python MyGPT_v2_pretrained.py
+```
+
+**What it does**: The model will load pre-trained weights in our from-scratch GPT-2 model and start an interactive chat where you can ask him to complete sentences. Simply enter text to see GPT-style completions!
 
 ## Overview
 
