@@ -2,7 +2,6 @@
 
 A from-scratch implementation of an LLM model using the Transformer architecture (multi-head attention), based on the papers "Attention is all you need" (Vaswani et al., 2017) and "Language Models are Unsupervised Multitask Learners" (Radford et al., 2019) for GPT-2.
 
------
 ## Table of Contents
 
 - [Overview](#overview)
@@ -14,7 +13,6 @@ A from-scratch implementation of an LLM model using the Transformer architecture
   - [MyGPT_v1_local-train.py](#mygpt_v1_local-trainpy)
   - [MyGPT_v2_pretrained.py](#mygpt_v2_pretrainedpy)
 
------
 ## Overview
 
 This project explores the GPT-2-style language model architecture by implementing all essential components from scratch: positional embeddings, multi-head attention, Transformer blocks, and text generation.
@@ -28,7 +26,6 @@ The implementation includes:
 - Training pipeline with validation
 - Text generation with various sampling strategies
 
------
 ## Features
 
 - **From-scratch implementation**: All components built without relying on high-level frameworks
@@ -36,7 +33,6 @@ The implementation includes:
 - **Apple Silicon support**: Optimized for MPS (Metal Performance Shaders) on Apple devices
 - **Interactive generation**: Chat-like interface for text completion
 
------
 ## Installation
 
 ### Prerequisites
@@ -64,7 +60,6 @@ pip install -r requirements.txt
 
 The project will automatically download the GPT-2 model weights (≈509 MB) when running `MyGPT_v2_pretrained.py`.
 
------
 ## Usage
 
 This project uses `uv` as a Python package manager. To install dependencies:
@@ -93,7 +88,6 @@ python MyGPT_v1_local-train.py
 python MyGPT_v2_pretrained.py
 ```
 
------
 ## Project Structure
 
 ```
@@ -114,7 +108,6 @@ mini-LLM_03/
 └── the-verdict.txt          # Training data
 ```
 
------
 ## Scripts
 
 ### MyGPT_v1_local-train.py
@@ -196,7 +189,6 @@ MyGPT: Every effort moves you toward a goal. That's the key to success. That's t
 
 This version is ready to use for generating coherent text and creating text completion applications.
 
------
 ## Technical Details
 
 ### Model Architecture
