@@ -1,14 +1,71 @@
 # MyGPT
 
------
-## 1 - Overview
-
 A from-scratch implementation of an LLM model using the Transformer architecture (multi-head attention), based on the papers "Attention is all you need" (Vaswani et al., 2017) and "Language Models are Unsupervised Multitask Learners" (Radford et al., 2019) for GPT-2.
+
+-----
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Scripts](#scripts)
+  - [MyGPT_v1_local-train.py](#mygpt_v1_local-trainpy)
+  - [MyGPT_v2_pretrained.py](#mygpt_v2_pretrainedpy)
+
+-----
+## Overview
 
 This project explores the GPT-2-style language model architecture by implementing all essential components from scratch: positional embeddings, multi-head attention, Transformer blocks, and text generation.
 
+The implementation includes:
+- Multi-head self-attention mechanism
+- Positional encodings
+- Layer normalization and residual connections
+- Transformer decoder blocks
+- GPT-2 architecture (12 layers, 12 heads, 768 embedding dimensions)
+- Training pipeline with validation
+- Text generation with various sampling strategies
+
 -----
-## 2 - Usage / How to run
+## Features
+
+- **From-scratch implementation**: All components built without relying on high-level frameworks
+- **Two versions**: Local training from scratch vs. using pre-trained GPT-2 weights
+- **Apple Silicon support**: Optimized for MPS (Metal Performance Shaders) on Apple devices
+- **Interactive generation**: Chat-like interface for text completion
+
+-----
+## Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- `uv` package manager (recommended) or `pip`
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone git@github.com:asut00/MyGPT.git
+cd MyGPT
+```
+
+2. Install dependencies using `uv`:
+```bash
+uv sync
+```
+
+Or using traditional pip:
+```bash
+pip install -r requirements.txt
+```
+
+The project will automatically download the GPT-2 model weights (≈509 MB) when running `MyGPT_v2_pretrained.py`.
+
+-----
+## Usage
 
 This project uses `uv` as a Python package manager. To install dependencies:
 
@@ -37,7 +94,30 @@ python MyGPT_v2_pretrained.py
 ```
 
 -----
-## 3 - MyGPT_v1_local-train.py
+## Project Structure
+
+```
+mini-LLM_03/
+├── src/                      # Core implementation
+│   ├── GPTModel.py          # Main GPT model architecture
+│   ├── MultiHeadAttention.py
+│   ├── TransformerBlock.py
+│   ├── Dataloader.py        # Data loading utilities
+│   ├── utils.py             # Text processing utilities
+│   ├── utils_train.py       # Training utilities
+│   ├── gpt_download.py      # GPT-2 weights downloader
+│   └── gpt_loadweights.py   # Weight loading logic
+├── 00_walkthrough/          # Learning materials
+├── gpt2/124M/               # Pre-trained weights (downloaded automatically)
+├── MyGPT_v1_local-train.py  # Local training script
+├── MyGPT_v2_pretrained.py   # Pre-trained model script
+└── the-verdict.txt          # Training data
+```
+
+-----
+## Scripts
+
+### MyGPT_v1_local-train.py
 
 This first version offers a complete local training of the GPT model from scratch. It demonstrates the full training pipeline:
 
@@ -70,7 +150,7 @@ Untrained model created with the following configuration:
 =========== TRAINING OUR GPT MODEL ===========
 ==============================================
 
-Loaded trainging data from: the-verdict.txt
+Loaded training data from: the-verdict.txt
 Starting Training...
 Ep 1 (Step 000000): Train loss 9.817, Val loss 9.924
 Ep 1 (Step 000005): Train loss 8.066, Val loss 8.332
@@ -87,8 +167,7 @@ Ep 10 (Step 000085): Train loss 0.569, Val loss 6.373
 Training completed in 1.09 minutes.
 ```
 
------
-## 4 - MyGPT_v2_pretrained.py
+### MyGPT_v2_pretrained.py
 
 This second version uses pre-trained weights downloaded from OpenAI's open-source models (GPT-2).
 
@@ -116,3 +195,36 @@ MyGPT: Every effort moves you toward a goal. That's the key to success. That's t
 ```
 
 This version is ready to use for generating coherent text and creating text completion applications.
+
+-----
+## Technical Details
+
+### Model Architecture
+
+The GPT model is based on the Transformer decoder architecture:
+
+- **Vocabulary size**: 50,257 (GPT-2's BPE tokenizer)
+- **Embedding dimension**: 768
+- **Number of layers**: 12
+- **Number of attention heads**: 12
+- **Context length**: 256 (training) / 1024 (pretrained)
+- **Positional encoding**: Learned embeddings
+- **Activation**: GELU
+
+### Key Components
+
+1. **MultiHeadAttention**: Implements scaled dot-product attention with multiple heads
+2. **TransformerBlock**: Combines attention with feed-forward layers and layer normalization
+3. **GPTModel**: Full model with embedding layers, transformer blocks, and output projection
+4. **Text Generation**: Sampling with temperature and top-k filtering for diverse outputs
+
+## Resources
+
+- Based on tutorials by Sebastian Raschka and Andrej Karpathy's nanoGPT
+- My raw walkthrough materials are available in `_walkthrough/` directory
+
+## Notes
+
+- The training script (`MyGPT_v1_local-train.py`) uses a shortened context length (256) for faster training on limited hardware
+- The pretrained script (`MyGPT_v2_pretrained.py`) uses the full context length (1024) to match GPT-2
+- Pre-trained weights are cached in the `gpt2/` directory after first download
