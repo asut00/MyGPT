@@ -32,6 +32,13 @@ uv run python MyGPT_v2_pretrained.py
 
 **What it does**: The model will load pre-trained weights in our from-scratch GPT-2 model and start an interactive chat where you can ask him to complete sentences. Simply enter text to see GPT-style completions!
 
+```
+$> python ./MyGPT_v2_pretrained.py
+MyGPT: Please enter a sentence to complete (enter 'exit' to end chat)
+> Every effort moves you
+MyGPT: Every effort moves you toward a goal. That's the key to success. That's the reason we're always trying to make sure our teams are the best team on the field," he said.
+```
+
 ## Overview
 
 This project explores the GPT-2-style language model architecture by implementing all essential components from scratch: positional embeddings, multi-head attention, Transformer blocks, and text generation.
