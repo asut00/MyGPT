@@ -44,7 +44,7 @@ The implementation includes:
 
 1. Clone the repository:
 ```bash
-git clone git@github.com:asut00/MyGPT.git
+git clone https://github.com/asut00/MyGPT.git
 cd MyGPT
 ```
 
